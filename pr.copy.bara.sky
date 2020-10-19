@@ -1,0 +1,26 @@
+core.workflow(
+    name = "default",
+    origin = git.github_pr_origin(
+      url = "git@github.com:sample-organisation/h-oss.git",
+    ),
+
+    destination = git.github_pr_destination(
+      url = "git@github.com:sample-organisation/h-pro.git",
+      destination_ref = "main",
+      pr_branch = "from_oss_${CONTEXT_REFERENCE}",
+      title = "Shadow PR from OSS (${CONTEXT_REFERENCE})",
+      body = "this is a sample body",
+    ),
+
+    mode = "ITERATIVE",
+
+    origin_files = glob(["lib*"]),
+    
+    destination_files = glob(["lib*"]),
+
+    authoring = authoring.pass_thru("hasura-bot <accounts@hasura.io>"),
+
+    transformations = [
+        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+    ],
+)
