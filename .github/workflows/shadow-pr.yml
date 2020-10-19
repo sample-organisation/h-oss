@@ -53,6 +53,7 @@ jobs:
           pushd h-pro.git
           LAST_REV=$(git log --grep="^GitOrigin-RevId:" -n 1  | grep "GitOrigin-RevId:" | sed 's/    GitOrigin-RevId: //g')
           popd
+          echo "last rev is $LAST_REV"
           
           cp pr.copy.bara.sky copy.bara.sky
 
