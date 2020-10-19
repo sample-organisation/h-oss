@@ -49,7 +49,7 @@ jobs:
           
           cp .git-credentials $HOME/.git-credentials
           
-          git clone --bare https://github.com/sample-organisation/h-pro.git
+          git clone --bare https://$GH_CREDS@github.com/sample-organisation/h-pro.git
           pushd h-pro
           LAST_REV=$(git log --grep="^GitOrigin-RevId:" -n 1  | grep "GitOrigin-RevId:" | sed 's/    GitOrigin-RevId: //g')
           popd
