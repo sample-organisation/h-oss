@@ -53,7 +53,7 @@ jobs:
             -v ${PWD}:/usr/src/app \
             --env COPYBARA_CONFIG=copy.bara.sky \
             --env COPYBARA_SUBCOMMAND=migrate \
-            --env COPYBARA_OPTIONS='' \
+            --env COPYBARA_OPTIONS='--init-history' \
             --env COPYBARA_WORKFLOW=default \
             --env COPYBARA_SOURCEREF=$PR_NUMBER \
             olivr/copybara:latest copybara
