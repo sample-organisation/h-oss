@@ -1,0 +1,59 @@
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'from_pro') != true }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: "Print github event"
+        run: |
+          echo "${{ github.event.head.ref }}"
+          
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+                  
+      - name: "Print github event"
+        run: |
+          echo "${{ github.event }}"
+          
+      - name: "Setup copybara"
+        run: |
+          docker pull olivr/copybara:latest
+      
+      - name: "Shadow pull request"
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GH_USERNAME: scriptnull
+          GH_CREDS: $GH_USERNAME:${{ secrets.GH_TOKEN }}
+          GH_SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "PR NUMBER is $PR_NUMBER"
+          
+          touch .git-credentials
+          echo "https://$GH_CREDS@api.github.com" >> .git-credentials
+          echo "https://$GH_CREDS@github.com" >> .git-credentials
+          
+          mkdir .ssh
+          echo "$GH_SSH_KEY" | tr -d '\r' > .ssh/id_rsa
+          chmod 400 .ssh/id_rsa
+          ssh-keyscan -t rsa github.com > .ssh/known_hosts
+          
+          cp pr.copy.bara.sky copy.bara.sky
+
+          docker run --rm \
+            -v ${PWD}/.git-credentials:/root/.git-credentials \
+            -v ${PWD}/bot.gitconfig:/root/.gitconfig \
+            -v ${PWD}/.ssh:/root/.ssh \
+            -v ${PWD}:/usr/src/app \
+            --env COPYBARA_CONFIG=copy.bara.sky \
+            --env COPYBARA_SUBCOMMAND=migrate \
+            --env COPYBARA_OPTIONS='' \
+            --env COPYBARA_WORKFLOW=default \
+            --env COPYBARA_SOURCEREF=$PR_NUMBER \
+            olivr/copybara:latest copybara
