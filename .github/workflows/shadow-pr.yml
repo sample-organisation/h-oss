@@ -56,4 +56,4 @@ jobs:
             --env COPYBARA_OPTIONS='' \
             --env COPYBARA_WORKFLOW=default \
             --env COPYBARA_SOURCEREF=$PR_NUMBER \
-            olivr/copybara:latest copybara
+            olivr/copybara:latest git clone git@github.com:sample-organisation/h-pro.git
