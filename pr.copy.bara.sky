@@ -12,7 +12,7 @@ core.workflow(
       body = "this is a sample body",
     ),
 
-    mode = "SQUASH",
+    mode = "CHANGE_REQUEST",
 
     origin_files = glob(["lib/**"]),
     
