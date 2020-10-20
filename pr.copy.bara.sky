@@ -14,9 +14,9 @@ core.workflow(
 
     mode = "CHANGE_REQUEST",
 
-    origin_files = glob(["lib*"]),
+    origin_files = glob(["lib/**"]),
     
-    destination_files = glob(["lib*"]),
+    destination_files = glob(["lib/**"]),
 
     authoring = authoring.pass_thru("hasura-bot <accounts@hasura.io>"),
 
