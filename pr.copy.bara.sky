@@ -22,5 +22,7 @@ core.workflow(
 
     transformations = [
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+        metadata.expose_label("GITHUB_PR_NUMBER"),
+        metadata.expose_label("GITHUB_PR_URL"),
     ],
 )
