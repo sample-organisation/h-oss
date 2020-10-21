@@ -2,6 +2,7 @@ core.workflow(
     name = "default",
     origin = git.github_pr_origin(
       url = "git@github.com:sample-organisation/h-oss.git",
+      baseline_from_branch = true,
     ),
 
     destination = git.github_pr_destination(
