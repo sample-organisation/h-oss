@@ -1,4 +1,4 @@
-A readme for lib folder
+A readme for lib
 
 
 some more changes here
