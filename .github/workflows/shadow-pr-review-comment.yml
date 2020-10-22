@@ -1,0 +1,124 @@
+on:
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+    
+jobs:
+  created-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'created' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            const pullRequestNumber = context.payload.pull_request.number;
+            const branchName = 'from_oss_refs/pull/' +  pullRequestNumber + '/head';
+            
+            console.log('branch Name', branchName);
+            
+            const prs = await github.pulls.list({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              base: 'main',
+              head: 'sample-organisation:' + branchName,
+            });
+            
+            if (prs.status != 200) {
+              core.setFailed('API request to get pull requests returned non-success status code ' + prs.status);
+              return;
+            } 
+            
+            if (prs.data.length < 1) {
+              core.setFailed('No PR found');
+              return;    
+            }
+            
+            const pr = prs.data[0];
+            console.log('pr number', pr.number);
+            
+            const quotedBody = context.payload.comment.body.split('\n').map(function(line) { return '> ' + line; }).join('\n');
+            
+            let generatedBody = `
+            <!-- comment_id: ${context.payload.comment.id} -->
+            @${context.payload.comment.user.login} commented:
+            ${quotedBody}
+            `;
+            
+            let reviewCommentRequest = {
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              pull_number: pr.number,
+              body: generatedBody,
+              commit_id: pr.head.sha,
+              position: context.payload.comment.position,
+              path: context.payload.comment.path,
+              side: context.payload.comment.side,
+              line: context.payload.comment.line,
+              start_line: context.payload.comment.start_line,
+              start_side: context.payload.comment.start_side
+            };
+            
+            let prComment;
+            
+            if (context.payload.comment.in_reply_to_id) {
+              const generatedCommentHead = `<!-- comment_id: ${context.payload.comment.in_reply_to_id} -->`
+              const shadowReviewComments = await github.pulls.listReviewComments({
+                owner: 'sample-organisation',
+                repo: 'h-pro',
+                pull_number: pr.number
+              });
+              
+              if (shadowReviewComments.status != 200) {
+                core.setFailed('API request to get pull request review comments returned non-success status code ' + shadowReviewComments.status);
+                return;
+              }
+              
+              console.log(JSON.stringify(shadowReviewComments.data, null, 4));
+              console.log(generatedCommentHead);
+              
+              let parentShadowComment = shadowReviewComments.data.filter(function(comment) { return comment.body.includes(generatedCommentHead); });
+              parentShadowComment = parentShadowComment[0];
+              if (!parentShadowComment) {
+                core.setFailed('Unable to find a parent review comment for comment ' + context.payload.comment.in_reply_to_id);
+                return;
+              }
+              
+              prComment = await github.pulls.createReplyForReviewComment({
+                owner: 'sample-organisation',
+                repo: 'h-pro',
+                pull_number: pr.number,
+                body: generatedBody, 
+                comment_id: parentShadowComment.id
+              });
+            } else {
+              prComment = await github.pulls.createReviewComment(reviewCommentRequest);
+            }
+            if (prComment.status > 299) {
+              core.setFailed('API request to create pr review comment returned non-success status code ' + prComment.status);
+              return
+            }
+            
+
+  edited-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'edited' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+      - name: Shadow Comment Edits
+        run: |
+          echo "code for shawdowing edits to a comment should be here"
+          
+          
+  deleted-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'deleted' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+      - name: Shadow Comment Deletion
+        run: |
+          echo "code for shawdowing comment deletes should be here"
