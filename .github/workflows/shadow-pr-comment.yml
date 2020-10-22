@@ -1,0 +1,253 @@
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+    
+jobs:
+  created-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'created' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+          
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            const pullRequestNumber = context.payload.issue.number;
+            const branchName = 'from_oss_refs/pull/' +  pullRequestNumber + '/head';
+            
+            console.log('branch Name', branchName);
+            
+            const prs = await github.pulls.list({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              base: 'main',
+              head: 'sample-organisation:' + branchName,
+            });
+            
+            if (prs.status != 200) {
+              core.setFailed('API request to get pull requests returned non-success status code ' + prs.status);
+              return;
+            } 
+            
+            if (prs.data.length < 1) {
+              core.setFailed('No PR found');
+              return;    
+            }
+            
+            const pr = prs.data[0];
+            console.log('pr number', pr.number);
+            
+            const quotedBody = context.payload.comment.body.split('\n').map(function(line) { return '> ' + line; }).join('\n');
+            
+            let generatedBody = `
+            <!-- 
+            # Metadata for Github actions
+            # Do not delete this
+            comment_id: ${context.payload.comment.id}
+            -->
+            @${context.payload.comment.user.login} commented:
+            
+            ${quotedBody}
+            `
+            
+            const prComment = await github.issues.createComment({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              issue_number: pr.number,
+              body: generatedBody
+            });
+            
+            if (prComment.status > 299) {
+              core.setFailed('API request to create pr review comment returned non-success status code ' + prComment.status);
+              return
+            }
+       
+  edited-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'edited' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+          
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            const pullRequestNumber = context.payload.issue.number;
+            const branchName = 'from_oss_refs/pull/' +  pullRequestNumber + '/head';
+            
+            console.log('branch Name', branchName);
+            
+            const prs = await github.pulls.list({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              base: 'main',
+              head: 'sample-organisation:' + branchName,
+            });
+            
+            if (prs.status != 200) {
+              core.setFailed('API request to get pull requests returned non-success status code ' + prs.status);
+              return;
+            } 
+            
+            if (prs.data.length < 1) {
+              core.setFailed('No PR found');
+              return;    
+            }
+            
+            const pr = prs.data[0];
+            console.log('pr number', pr.number);
+            
+            const commentId = context.payload.comment.id;
+            
+            const commentsResult = await github.issues.listComments({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              issue_number: pr.number,
+              since: context.payload.comment.created_at
+            });
+            
+            if (commentsResult.status != 200) {
+              core.setFailed('API request to get comments of PR returned non-success status code ' + commentsResult.status);
+              return;
+            }
+            
+            const comments = commentsResult.data;
+            
+            console.log(JSON.stringify(comments, null, 4));
+            
+            const generatedCommentHead = `
+            <!-- 
+            # Metadata for Github actions
+            # Do not delete this
+            comment_id: ${context.payload.comment.id}
+            -->
+            
+            @${context.payload.comment.user.login} commented:
+            
+            ---
+            
+            `;
+            
+            const matchingComments = comments.filter(function (comment) { return comment.body.includes(generatedCommentHead); });
+            
+            console.log('matching comments');
+            
+            console.log(JSON.stringify(matchingComments, null, 4));
+            
+            const matchingComment = matchingComments[0];
+            
+            if (!matchingComment) {
+              core.setFailed('Failed to find a matching comment in the shadow PR for comment: ' + context.payload.comment.id);
+              return;
+            }
+            
+            const generatedBody = `${generatedCommentHead}
+            
+            ${context.payload.comment.body}
+            `;
+            
+            const updateResult = await github.issues.updateComment({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              comment_id: matchingComment.id,
+              body: generatedBody
+            });
+
+            if (updateResult.status > 299) {
+              core.setFailed('API request to update pr comment returned non-success status code ' + updateResult.status);
+              return
+            }
+            
+  deleted-comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'deleted' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    steps:
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            const pullRequestNumber = context.payload.issue.number;
+            const branchName = 'from_oss_refs/pull/' +  pullRequestNumber + '/head';
+            
+            console.log('branch Name', branchName);
+            
+            const prs = await github.pulls.list({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              base: 'main',
+              head: 'sample-organisation:' + branchName,
+            });
+            
+            if (prs.status != 200) {
+              core.setFailed('API request to get pull requests returned non-success status code ' + prs.status);
+              return;
+            } 
+            
+            if (prs.data.length < 1) {
+              core.setFailed('No PR found');
+              return;    
+            }
+            
+            const pr = prs.data[0];
+            console.log('pr number', pr.number);
+            
+            const commentId = context.payload.comment.id;
+            
+            const commentsResult = await github.issues.listComments({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              issue_number: pr.number,
+              since: context.payload.comment.created_at
+            });
+            
+            if (commentsResult.status != 200) {
+              core.setFailed('API request to get comments of PR returned non-success status code ' + commentsResult.status);
+              return;
+            }
+            
+            const comments = commentsResult.data;
+            
+            console.log(JSON.stringify(comments, null, 4));
+            
+            const generatedCommentHead = `
+            <!-- 
+            # Metadata for Github actions
+            # Do not delete this
+            comment_id: ${context.payload.comment.id}
+            -->
+            
+            @${context.payload.comment.user.login} commented:
+            
+            ---
+            
+            `;
+            
+            const matchingComments = comments.filter(function (comment) { return comment.body.includes(generatedCommentHead); });
+            
+            console.log('matching comments');
+            
+            console.log(JSON.stringify(matchingComments, null, 4));
+            
+            const matchingComment = matchingComments[0];
+            
+            if (!matchingComment) {
+              core.setFailed('Failed to find a matching comment in the shadow PR for comment: ' + context.payload.comment.id);
+              return;
+            }
+            
+            const deleteResult = await github.issues.deleteComment({
+              owner: 'sample-organisation',
+              repo: 'h-pro',
+              comment_id: matchingComment.id
+            });
+
+            if (deleteResult.status > 299) {
+              core.setFailed('API request to delete pr comment returned non-success status code ' + deleteResult.status);
+              return
+            }
