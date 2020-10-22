@@ -10,10 +10,9 @@ jobs:
       - name: Shadow comment review
         uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GH_TOKEN}}
           script: |
             const pullRequestNumber = context.payload.issue.number;
-            console.log(pullRequestNumber
+            console.log(pullRequestNumber);
 
 
       - name: Debug Action
