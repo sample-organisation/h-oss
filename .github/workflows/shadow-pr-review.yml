@@ -7,12 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.action == 'submitted' }}
     steps:                     
-      - name: Shadow comment review
+      - name: Shadow pr review
         uses: actions/github-script@v3
         with:
           script: |
-            const pullRequestNumber = context.payload.issue.number;
-            console.log(pullRequestNumber);
+            console.log('should shadow pr review here');
+            console.log(context.payload);
+          github-token: ${{secrets.GH_TOKEN}}
 
 
       - name: Debug Action
