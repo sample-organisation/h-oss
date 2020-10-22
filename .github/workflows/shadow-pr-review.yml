@@ -18,7 +18,6 @@ jobs:
             console.log('review created');
 
 
-
 #   edited-review:
 #     runs-on: ubuntu-latest
 #     if: ${{ github.event.action == 'edited' }}
