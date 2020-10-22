@@ -13,6 +13,7 @@ jobs:
           github-token: ${{secrets.GH_TOKEN}}
           script: |
             const pullRequestNumber = context.payload.issue.number;
+            console.log(pullRequestNumber
 
 
       - name: Debug Action
