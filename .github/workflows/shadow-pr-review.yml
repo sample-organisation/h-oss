@@ -13,7 +13,7 @@ jobs:
           script: |
             console.log('should shadow pr review here');
             console.log(context.payload);
-          github-token: ${{secrets.GH_TOKEN}}
+          github-token: 1234
 
 
       - name: Debug Action
