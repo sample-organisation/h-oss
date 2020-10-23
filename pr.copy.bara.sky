@@ -12,7 +12,7 @@ core.workflow(
       body = "this is a sample body",
     ),
 
-    mode = "ITERATIVE",
+    mode = "CHANGE_REQUEST",
 
     origin_files = glob(["lib/**"]),
     
@@ -20,7 +20,7 @@ core.workflow(
 
     authoring = authoring.pass_thru("hasura-bot <accounts@hasura.io>"),
     
-    set_rev_id = True,
+    set_rev_id = False,
 
     transformations = [
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
