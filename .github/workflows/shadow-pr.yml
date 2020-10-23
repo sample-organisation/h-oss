@@ -24,6 +24,7 @@ jobs:
           GH_USERNAME: scriptnull
           GH_CREDS: $GH_USERNAME:${{ secrets.GH_TOKEN }}
           GH_SSH_KEY: ${{ secrets.SSH_KEY }}
+          GH_BASE_REPO_HEAD_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           echo "PR NUMBER is $PR_NUMBER"
           
@@ -56,7 +57,7 @@ jobs:
             -v ${PWD}:/usr/src/app \
             --env COPYBARA_CONFIG=copy.bara.sky \
             --env COPYBARA_SUBCOMMAND=migrate \
-            --env COPYBARA_OPTIONS="--ignore-noop" \
+            --env COPYBARA_OPTIONS="--ignore-noop --last-rev $GH_BASE_REPO_HEAD_SHA" \
             --env COPYBARA_WORKFLOW=default \
             --env COPYBARA_SOURCEREF=$PR_NUMBER \
             olivr/copybara:latest copybara
