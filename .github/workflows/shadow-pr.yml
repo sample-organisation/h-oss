@@ -48,6 +48,8 @@ jobs:
           popd
           echo "last rev is $LAST_REV"
           
+          echo "GH_BASE_REPO_HEAD_SHA is $GH_BASE_REPO_HEAD_SHA"
+          
           cp pr.copy.bara.sky copy.bara.sky
 
           docker run --rm \
