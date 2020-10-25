@@ -33,6 +33,11 @@ jobs:
               return;
             }
             
+            let authors = commits.map(function(c) { return `${commit.author.name} <${commit.author.email}>`; });
+            authors = Array.from(new Set(authors));
+            authors = authors.join(',');
+            console.log('authors', authors);
+            core.exportVariable('ALL_COMMIT_AUTHORS', authors);
             console.log(JSON.stringify(commits.data, null, 4)); 
 
       - name: Log into GitHub Container Registry
@@ -72,6 +77,8 @@ jobs:
           echo "GH_BASE_REPO_HEAD_SHA is $GH_BASE_REPO_HEAD_SHA"
           
           cp pr.copy.bara.sky copy.bara.sky
+          
+          echo "ALL_COMMIT_AUTHORS is $ALL_COMMIT_AUTHORS"
 
           docker run --rm \
             -v ${PWD}/.git-credentials:/root/.git-credentials \
