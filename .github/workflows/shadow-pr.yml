@@ -19,8 +19,21 @@ jobs:
         with:
           github-token: ${{secrets.GH_TOKEN}}
           script: |
-            const pullRequestNumber = context.payload.issue.number;
+            const pullRequestNumber = context.payload.number;
             console.log(pullRequestNumber);
+            
+            const commits = await github.pulls.listCommits({
+              owner: 'sample-organisation',
+              repo: 'h-oss',
+              pull_number: pullRequestNumber
+            });
+            
+            if (commits.status != 200) {
+              core.setFailed('API request to get commits of pull request returned non-success status code ' + commits.status);
+              return;
+            }
+            
+            console.log(JSON.stringify(commits.data, null, 4)); 
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
