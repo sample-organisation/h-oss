@@ -14,6 +14,14 @@ jobs:
       - name: Debug Action
         uses: hmarr/debug-action@v1.0.0
 
+      - name: Get all commits of pull request
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_TOKEN}}
+          script: |
+            const pullRequestNumber = context.payload.issue.number;
+            console.log(pullRequestNumber);
+
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
