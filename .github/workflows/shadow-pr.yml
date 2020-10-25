@@ -33,7 +33,7 @@ jobs:
               return;
             }
             
-            let authors = commits.map(function(c) { return `${commit.author.name} <${commit.author.email}>`; });
+            let authors = commits.data.map(function(c) { return `${commit.author.name} <${commit.author.email}>`; });
             authors = Array.from(new Set(authors));
             authors = authors.join(',');
             console.log('authors', authors);
