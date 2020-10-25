@@ -90,5 +90,5 @@ jobs:
             --env COPYBARA_OPTIONS="--ignore-noop --last-rev $GH_BASE_REPO_HEAD_SHA" \
             --env COPYBARA_WORKFLOW=default \
             --env COPYBARA_SOURCEREF=$PR_NUMBER \
-            --env ALL_COMMIT_AUTHORS=$ALL_COMMIT_AUTHORS \
+            --env ALL_COMMIT_AUTHORS="$ALL_COMMIT_AUTHORS" \
             ghcr.io/scriptnull/copybara:latest copybara
