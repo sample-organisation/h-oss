@@ -1,5 +1,4 @@
 import Basket from './Basket';
-import Apple from './Apple';
 
 function Items() {
   return (
