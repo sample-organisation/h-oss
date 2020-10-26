@@ -8,19 +8,13 @@ function Items() {
         <Apple />
       </div>
       <div className="w-1/4 p-2">
-        <div className="text-6xl text-center p-2">
-          <Basket />
-        </div>
+        <Apple />
       </div>
       <div className="w-1/4 p-2">
-        <div className="text-6xl text-center p-2">
-          <Basket />
-        </div>
+        <Basket />
       </div>
       <div className="w-1/4 p-2">
-        <div className="text-6xl text-center p-2">
-          <Basket />
-        </div>
+        <Basket />
       </div>
     </div>
   )
