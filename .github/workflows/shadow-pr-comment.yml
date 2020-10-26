@@ -5,7 +5,7 @@ on:
 jobs:
   created-comment:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'created' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    if: ${{ github.event.action == 'created' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' && github.event.comment.user.login != 'netlify[bot]' }}
     steps:                     
       - name: Shadow comment creation
         uses: actions/github-script@v3
@@ -64,7 +64,7 @@ jobs:
        
   edited-comment:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'edited' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    if: ${{ github.event.action == 'edited' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' && github.event.comment.user.login != 'netlify[bot]' }}
     steps:      
       - name: Shadow comment edits
         uses: actions/github-script@v3
@@ -159,7 +159,7 @@ jobs:
             
   deleted-comment:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'deleted' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' }}
+    if: ${{ github.event.action == 'deleted' && github.event.issue.pull_request && github.event.comment.user.login != 'gh-shadow-bot' && github.event.comment.user.login != 'netlify[bot]' }}
     steps:
       - name: Shadow comment deletion
         uses: actions/github-script@v3
