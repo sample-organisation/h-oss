@@ -8,7 +8,7 @@ core.workflow(
       url = "git@github.com:sample-organisation/h-pro.git",
       destination_ref = "main",
       pr_branch = "from_oss_${CONTEXT_REFERENCE}",
-      title = "${GITHUB_PR_TITLE} (Shadow of h-oss#${GITHUB_PR_NUMBER})",
+      title = "${GITHUB_PR_TITLE} (Shadow)",
       body = "#### Source PR \n${GITHUB_PR_URL} \n#### Description \n${GITHUB_PR_BODY}",
     ),
 
