@@ -1,4 +1,4 @@
-// import Basket from './Basket';
+import Basket from './Basket';
 import Apple from './Apple';
 
 function Items() {
@@ -11,10 +11,10 @@ function Items() {
         <Apple />
       </div>
       <div className="w-1/4 p-2">
-        <Apple />
+        <Basket />
       </div>
       <div className="w-1/4 p-2">
-        <Apple />
+        <Basket />
       </div>
     </div>
   )
