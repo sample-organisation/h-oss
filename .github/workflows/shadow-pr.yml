@@ -14,8 +14,9 @@ jobs:
       - name: Debug Action
         uses: hmarr/debug-action@v1.0.0
 
-      - name: Get all commits of pull request
+      - name: Get all authors from all commits of pull request
         uses: actions/github-script@v3
+        id: commit-authors
         with:
           github-token: ${{secrets.GH_TOKEN}}
           script: |
@@ -37,12 +38,8 @@ jobs:
             authors = Array.from(new Set(authors));
             authors = authors.join(',');
             console.log('authors', authors);
-            core.exportVariable('ALL_COMMIT_AUTHORS', authors);
+            core.setOutput('allCommitAuthors', authors);
             console.log(JSON.stringify(commits.data, null, 4)); 
-
-      - name: Log into GitHub Container Registry
-      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
       
       - name: "Shadow pull request"
         env:
@@ -51,6 +48,7 @@ jobs:
           GH_CREDS: $GH_USERNAME:${{ secrets.GH_TOKEN }}
           GH_SSH_KEY: ${{ secrets.SSH_KEY }}
           GH_BASE_REPO_HEAD_SHA: ${{ github.event.pull_request.base.sha }}
+          ALL_COMMIT_AUTHORS: ${{ steps.commit-authors.outputs.allCommitAuthors }}
         run: |
           echo "PR NUMBER is $PR_NUMBER"
           
