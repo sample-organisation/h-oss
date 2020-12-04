@@ -5,7 +5,7 @@ on:
 jobs:
   open-pr:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.pull_request.body, '<!-- from pro -->') != true }}
+    if: ${{ startsWith(github.event.pull_request.body, '<!-- from mono -->') != true }}
     steps:
       - uses: actions/checkout@v2
         with:
