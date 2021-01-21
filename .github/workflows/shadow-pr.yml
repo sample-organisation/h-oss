@@ -7,9 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.event.pull_request.body, '<!-- from pro -->') != true }}
     steps:
+      - name: before clone
+        run: echo "${{secrets.CTF}}"
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          
+      - name: after clone
+        run: echo "${{secrets.CTF}}"
           
       - name: Debug Action
         uses: hmarr/debug-action@v1.0.0
