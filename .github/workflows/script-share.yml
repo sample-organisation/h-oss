@@ -2,7 +2,8 @@ name: script share
 
 on:
   push:
-    - main
+    branches: 
+      - main
 
 jobs:
   run-job:
