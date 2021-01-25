@@ -1,0 +1,13 @@
+name: script share
+
+on:
+  push:
+    - main
+
+jobs:
+  run-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run script
+        run: |
+          pwd
