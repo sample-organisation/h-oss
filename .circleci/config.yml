@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build_image:
+    docker:
+      - image: hasura/graphql-engine-server-builder:2020-11-05
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: false
+      - run:
+          name: Build a docker image
+          command: |
+            echo "image will be built here"
+            docker pull alpine:latest
+workflows:
+  version: 2
+  oss_workflow:
+    jobs:
+      - build_image
